@@ -1,25 +1,19 @@
-import {StyleSheet, View, ScrollView} from 'react-native';
-import {SelectItem} from '@/components/SelectItem';
-import {IC_CAMERA, IC_CHECKIN, IC_LOCATION} from '@/assets';
-import * as React from 'react';
-import styled from 'styled-components/native';
-import {Colors} from '@/themes/Colors';
-import {memo, useCallback, useEffect, useState} from 'react';
-import {checkPermission, PERMISSIONS_TYPE} from '@/utils/permissions';
-import {CheckInScreen} from '@/screens/CheckIn/CheckInScreen';
-import Modal from 'react-native-modal';
-import {getBottomSpace} from 'react-native-iphone-x-helper';
-import {
-  MobileClient,
-  PayloadPostClientsProps,
-  Permission,
-  RawClient,
-} from '@/types';
-import {useClient, useMobileClients} from '@/store/login';
-import {useAsyncFn} from 'react-use';
-import {defaultParams} from '@/utils/formData';
-import {getClients} from '@/store/login/functions';
-import useBoolean from '@/hooks/useBoolean';
+import { StyleSheet, View } from "react-native";
+import { SelectItem } from "@/components/SelectItem";
+import { IC_CAMERA, IC_CHECKIN, IC_LOCATION } from "@/assets";
+import * as React from "react";
+import { memo, useCallback, useEffect, useState } from "react";
+import styled from "styled-components/native";
+import { Colors } from "@/themes/Colors";
+import { checkPermission, PERMISSIONS_TYPE } from "@/utils/permissions";
+import { CheckInScreen } from "@/screens/CheckIn/CheckInScreen";
+import { MobileClient, PayloadPostClientsProps, Permission, RawClient } from "@/types";
+import { useClient } from "@/store/login";
+import { useAsyncFn } from "react-use";
+import { defaultParams } from "@/utils/formData";
+import { getClients } from "@/store/login/functions";
+import useBoolean from "@/hooks/useBoolean";
+import { ModalClient } from "@/screens/CheckIn/components/ModalClient";
 
 interface Props {
   index?: number;
@@ -58,13 +52,7 @@ export const CheckPermissionScreen = memo(({index}: Props) => {
     getMobileClients().then();
   }, []);
 
-  const mobileClients: MobileClient[] = useMobileClients();
-
   const [selectedClient, setSelectedClient] = useState<MobileClient>();
-
-  const onBackdrop = useCallback(() => {
-    hideModalVisible();
-  }, []);
 
   const onSelectClient = useCallback(() => {
     showModalVisible();
@@ -89,18 +77,6 @@ export const CheckPermissionScreen = memo(({index}: Props) => {
     await onPermission(PERMISSIONS_TYPE.location, true);
   }, [PERMISSIONS_TYPE.location]);
 
-  const onPickClient = useCallback(
-    (item: MobileClient) => {
-      setPermission((prev: any) => ({
-        ...prev,
-        checkin: true,
-      }));
-      setSelectedClient(item);
-      hideModalVisible();
-    },
-    [setSelectedClient, permission.checkin],
-  );
-
   useEffect(() => {
     (async () => {
       await onPermission(PERMISSIONS_TYPE.camera);
@@ -114,34 +90,13 @@ export const CheckPermissionScreen = memo(({index}: Props) => {
 
   return (
     <View style={[styles.scene, styles.checkIn]}>
-      <Modal
-        style={styles.modal}
-        isVisible={modalVisible}
-        hasBackdrop={true}
-        statusBarTranslucent={true}
-        onBackdropPress={onBackdrop}>
-        <CenteredView>
-          <ModalView>
-            <InputContactContainer>
-              <NoteSelectContainer>
-                <NoteText>Select CheckIn client</NoteText>
-              </NoteSelectContainer>
-              <ScrollView>
-                {mobileClients.length > 0 &&
-                  mobileClients.map((item, index) => {
-                    return (
-                      <SelectButton
-                        key={index}
-                        onPress={() => onPickClient(item)}>
-                        <TitleText numberOfLines={1}>{item.name}</TitleText>
-                      </SelectButton>
-                    );
-                  })}
-              </ScrollView>
-            </InputContactContainer>
-          </ModalView>
-        </CenteredView>
-      </Modal>
+      <ModalClient
+        setSelectedClient={setSelectedClient}
+        permission={permission}
+        setPermission={setPermission}
+        modalVisible={modalVisible}
+        hideModalVisible={hideModalVisible}
+      />
       {isCheckIn ? (
         <CheckInScreen
           selectedClient={selectedClient}
@@ -221,54 +176,3 @@ const styles = StyleSheet.create({
     padding: 0,
   },
 });
-
-const NoteSelectContainer = styled.View`
-  border-bottom-width: 0.5px;
-  border-bottom-color: ${Colors.oldSilver};
-  height: 40px;
-  justify-content: center;
-`;
-
-const NoteText = styled.Text`
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 20px;
-  color: ${Colors.black};
-`;
-
-const TitleText = styled.Text`
-  font-size: 17px;
-  font-weight: 400;
-  line-height: 20px;
-  color: ${Colors.black};
-`;
-
-const CenteredView = styled.View`
-  align-items: center;
-  padding: 0 20px;
-  padding-bottom: ${getBottomSpace()}px;
-  background-color: ${Colors.white};
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-`;
-
-const ModalView = styled.View`
-  width: 110%;
-  background-color: ${Colors.white};
-  border-radius: 20px;
-  padding-top: 10px;
-  padding-left: 20px;
-`;
-
-const InputContactContainer = styled.View`
-  background-color: ${Colors.white};
-  border-radius: 15px;
-  padding: 5px;
-`;
-
-const SelectButton = styled.TouchableOpacity`
-  height: 40px;
-  padding-top: 10px;
-  border-bottom-width: 0.5px;
-  border-bottom-color: ${Colors.oldSilver};
-`;

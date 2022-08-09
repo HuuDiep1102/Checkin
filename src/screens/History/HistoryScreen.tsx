@@ -64,12 +64,6 @@ const themes: any = {
   },
 };
 
-const BlankView = styled.View`
-  width: 100%;
-  height: 8px;
-  background-color: ${Colors.anti_flashWhite};
-`;
-
 export const HistoryScreen = memo(() => {
   const [selectedDate, setSelectedDate] = useState<string>(
     moment().format('YYYY-MM-DD'),
@@ -131,7 +125,6 @@ export const HistoryScreen = memo(() => {
 
       return (
         <DayComponent
-          key={dateString}
           isToday={isToday}
           date={dateString}
           isDayInMonth={isDayInMonth}
@@ -201,3 +194,9 @@ const styles = StyleSheet.create({
 
   scroll: {},
 });
+
+const BlankView = styled.View`
+  width: 100%;
+  height: 8px;
+  background-color: ${Colors.anti_flashWhite};
+`;

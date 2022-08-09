@@ -1,29 +1,22 @@
-import React, {memo, useCallback, useMemo, useRef} from 'react';
-import styled from 'styled-components/native';
-import {Maps} from '@/screens/CheckIn/components/Map';
-import {Colors} from '@/themes/Colors';
-import moment from 'moment';
-import 'moment/locale/vi'; // ko co dong nay locale ko chay
-import CameraView from '@/screens/CheckIn/components/Camera';
-import {MobileClient, RawClient} from '@/types';
-import {useClient, useMobileClients} from '@/store/login';
-import {useAsyncFn} from 'react-use';
-import {useLocation} from '@/hooks/useLocation';
-import {defaultParams} from '@/utils/formData';
-import {requestCheckin} from '@/store/login/functions';
-import {
-  ActivityIndicator,
-  Alert,
-  Platform,
-  ScrollView,
-  StyleSheet,
-} from 'react-native';
-import {Marker} from 'react-native-maps';
-import {css} from 'styled-components';
-import {Timer} from '@/screens/CheckIn/components/Timer';
-import Modal from 'react-native-modal';
-import {getBottomSpace} from 'react-native-iphone-x-helper';
-import useBoolean from '@/hooks/useBoolean';
+import React, { memo, useCallback, useMemo, useRef } from "react";
+import styled from "styled-components/native";
+import { Maps } from "@/screens/CheckIn/components/Map";
+import { Colors } from "@/themes/Colors";
+import moment from "moment";
+import "moment/locale/vi"; // ko co dong nay locale ko chay
+import CameraView from "@/screens/CheckIn/components/Camera";
+import { MobileClient, RawClient } from "@/types";
+import { useClient } from "@/store/login";
+import { useAsyncFn } from "react-use";
+import { useLocation } from "@/hooks/useLocation";
+import { defaultParams } from "@/utils/formData";
+import { requestCheckin } from "@/store/login/functions";
+import { ActivityIndicator, Alert, Platform } from "react-native";
+import { Marker } from "react-native-maps";
+import { css } from "styled-components";
+import { Timer } from "@/screens/CheckIn/components/Timer";
+import useBoolean from "@/hooks/useBoolean";
+import { ModalClient } from "@/screens/CheckIn/components/ModalClient";
 
 interface Props {
   selectedClient?: MobileClient;
@@ -42,10 +35,6 @@ export const CheckInScreen = memo(
 
     const today = useMemo(() => {
       return moment().format('L');
-    }, []);
-
-    const onBackdrop = useCallback(() => {
-      hideModalVisible();
     }, []);
 
     const onSelectClient = useCallback(() => {
@@ -110,46 +99,13 @@ export const CheckInScreen = memo(
       );
     }, [latitude, longitude]);
 
-    const mobileClients: MobileClient[] = useMobileClients();
-
-    const onPickClient = useCallback(
-      (item: MobileClient) => {
-        setSelectedClient(item);
-        hideModalVisible();
-      },
-      [setSelectedClient],
-    );
-
     return (
       <Container>
-        <Modal
-          style={styles.modal}
-          isVisible={modalVisible}
-          hasBackdrop={true}
-          statusBarTranslucent={true}
-          onBackdropPress={onBackdrop}>
-          <CenteredView>
-            <ModalView>
-              <InputContactContainer>
-                <NoteSelectContainer>
-                  <NoteText>Select CheckIn client</NoteText>
-                </NoteSelectContainer>
-                <ScrollView>
-                  {mobileClients.length > 0 &&
-                    mobileClients.map((item, index) => {
-                      return (
-                        <SelectButton
-                          key={index}
-                          onPress={() => onPickClient(item)}>
-                          <TitleText numberOfLines={1}>{item.name}</TitleText>
-                        </SelectButton>
-                      );
-                    })}
-                </ScrollView>
-              </InputContactContainer>
-            </ModalView>
-          </CenteredView>
-        </Modal>
+        <ModalClient
+          setSelectedClient={setSelectedClient}
+          modalVisible={modalVisible}
+          hideModalVisible={hideModalVisible}
+        />
 
         <DateTimeContainer>
           <Date>
@@ -164,7 +120,7 @@ export const CheckInScreen = memo(
         <ButtonContainer>
           <CheckInButton disabled={loading} onPress={submitCheckin}>
             <CheckInButtonText>CHẤM CÔNG</CheckInButtonText>
-            {loading && <ActivityIndicator color={'#0077cc'} />}
+            {loading && <ActivityIndicator color={Colors.blues} />}
           </CheckInButton>
           <CheckInClientContainer onPress={onSelectClient}>
             <CheckInClientText numberOfLines={1}>
@@ -257,75 +213,4 @@ const CheckInClientText = styled.Text`
   font-size: 13px;
   color: ${Colors.green2};
   font-weight: 400;
-`;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scene: {
-    flex: 1,
-  },
-
-  checkIn: {
-    backgroundColor: Colors.white,
-    marginTop: 8,
-  },
-
-  modal: {
-    justifyContent: 'flex-end',
-    margin: 0,
-    padding: 0,
-  },
-});
-
-const NoteSelectContainer = styled.View`
-  border-bottom-width: 0.5px;
-  border-bottom-color: ${Colors.oldSilver};
-  height: 40px;
-  justify-content: center;
-`;
-
-const NoteText = styled.Text`
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 20px;
-  color: ${Colors.black};
-`;
-
-const TitleText = styled.Text`
-  font-size: 17px;
-  font-weight: 400;
-  line-height: 20px;
-  color: ${Colors.black};
-`;
-
-const CenteredView = styled.View`
-  align-items: center;
-  padding: 0 20px;
-  padding-bottom: ${getBottomSpace()}px;
-  background-color: ${Colors.white};
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-`;
-
-const ModalView = styled.View`
-  width: 110%;
-  background-color: ${Colors.white};
-  border-radius: 20px;
-  padding-top: 10px;
-  padding-left: 20px;
-`;
-
-const InputContactContainer = styled.View`
-  background-color: ${Colors.white};
-  border-radius: 15px;
-  padding: 5px;
-`;
-
-const SelectButton = styled.TouchableOpacity`
-  height: 40px;
-  padding-top: 10px;
-  border-bottom-width: 0.5px;
-  border-bottom-color: ${Colors.oldSilver};
 `;

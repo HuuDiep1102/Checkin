@@ -1,5 +1,5 @@
 import MapView, {MapViewProps, PROVIDER_GOOGLE} from 'react-native-maps';
-import React, {memo} from 'react';
+import React from 'react';
 import {StyleSheet} from 'react-native';
 import {Colors} from '@/themes/Colors';
 import styled from 'styled-components/native'; // remove PROVIDER_GOOGLE import if not using Google Maps

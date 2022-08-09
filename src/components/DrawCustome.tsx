@@ -1,9 +1,9 @@
-import React, {memo, useCallback} from 'react';
+import React, {memo} from 'react';
 
 import {IC_LOCK} from '@/assets';
 
 import styled from 'styled-components/native';
-import {ScrollView, StyleSheet} from 'react-native';
+import {ActivityIndicator, ScrollView, StyleSheet} from 'react-native';
 import {getStatusBarHeight} from 'react-native-status-bar-height';
 import {Colors} from '@/themes/Colors';
 import {RawClient} from '@/types';
@@ -11,11 +11,12 @@ import {useClient} from '@/store/login';
 import {requestLogout} from '@/store/login/functions';
 import {defaultParams} from '@/utils/formData';
 import {reset} from '@/utils/navigation';
+import {useAsyncFn} from 'react-use';
 
 export const CustomDrawer = memo(() => {
   const client: RawClient = useClient();
 
-  const onLogout = useCallback(async () => {
+  const [{loading}, onLogout] = useAsyncFn(async () => {
     const res = await requestLogout({
       access_token: client.access_token,
       client_key: client.client_key,
@@ -35,6 +36,12 @@ export const CustomDrawer = memo(() => {
           <NewCollectionButton onPress={onLogout}>
             <LogIcon source={IC_LOCK} />
             <NewCollectionButtonText>Logout</NewCollectionButtonText>
+            {loading && (
+              <ActivityIndicator
+                color={Colors.azure}
+                style={{marginLeft: 10}}
+              />
+            )}
           </NewCollectionButton>
         </NewCollectionContainer>
       </ScrollView>
@@ -55,11 +62,7 @@ const BannerContainer = styled.View`
   padding-left: 20px;
   padding-right: 9px;
 `;
-const Avatar = styled.Image`
-  height: 40px;
-  width: 40px;
-  border-radius: 45px;
-`;
+
 
 const NewCollectionContainer = styled.View`
   padding-left: 20px;

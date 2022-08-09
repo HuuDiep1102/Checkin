@@ -89,7 +89,7 @@ export const LoginScreen = memo(() => {
                   <BtnLoginText>ĐĂNG NHẬP</BtnLoginText>
                   {loading && (
                     <ActivityIndicator
-                      color={'#ffffff'}
+                      color={Colors.white}
                       style={{marginLeft: 10}}
                     />
                   )}

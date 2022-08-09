@@ -1,4 +1,4 @@
-import React, {forwardRef, useEffect, useMemo} from 'react';
+import React, {forwardRef} from 'react';
 import {Camera, useCameraDevices} from 'react-native-vision-camera';
 import {Colors} from '@/themes/Colors';
 import styled from 'styled-components/native';
@@ -14,10 +14,6 @@ const LoadingView = styled.View`
 
 const CameraView = (props: any, ref: any) => {
   const devices = useCameraDevices();
-
-  // const device = useMemo(() => {
-  //   return devices.front;
-  // }, [devices]);
 
   const device = devices.front;
 

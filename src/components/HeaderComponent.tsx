@@ -3,9 +3,10 @@ import styled from 'styled-components/native';
 import {Colors} from '@/themes/Colors';
 import 'react-native-gesture-handler';
 import {getStatusBarHeight} from 'react-native-status-bar-height';
-import {StatusBar} from 'react-native';
+import {Platform, StatusBar} from 'react-native';
 import {IC_MENU} from '@/assets';
 import {openDrawer} from '@/utils/navigation';
+import {css} from 'styled-components';
 
 interface HeaderComponentProps {
   title: string;
@@ -50,9 +51,19 @@ const DrawButton = styled.TouchableOpacity`
   position: absolute;
   left: 10px;
   top: 35px;
+  ${Platform.select({
+    ios: css`
+      top: 55px;
+    `,
+    android: css`
+      top: 55px;
+      //35
+    `,
+  })};
 `;
 
 const HeaderImage = styled.Image`
   width: 24px;
   height: 24px;
+  tint-color: ${Colors.white};
 `;

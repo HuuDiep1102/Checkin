@@ -11,102 +11,104 @@ import useBoolean from '@/hooks/useBoolean';
 import {RawHistory} from '@/types';
 
 interface Props extends TextInputProps {
-  key?: string;
   date?: string;
   isDayInMonth: boolean;
   isToday: boolean;
 }
 
-export const DayComponent = memo(({date, isDayInMonth, isToday}: Props) => {
-  const weekName = useMemo(() => {
-    return moment(date).locale('vi').format('dddd');
-  }, [date]);
+export const DayComponent = memo(
+  ({date, isDayInMonth, isToday}: Props) => {
+    const weekName = useMemo(() => {
+      return moment(date).locale('vi').format('dddd');
+    }, [date]);
 
-  const today = useMemo(() => {
-    return moment(date).format('L');
-  }, [date]);
+    const today = useMemo(() => {
+      return moment(date).format('L');
+    }, [date]);
 
-  const dateTitle = useMemo(() => {
-    return moment(date).format('DD/MM').toString();
-  }, [date]);
+    const dateTitle = useMemo(() => {
+      return moment(date).format('DD/MM').toString();
+    }, [date]);
 
-  const [modalVisible, showModalVisible, hideModalVisible] = useBoolean(false); //Khong can viet thanh ham nua
+    const [modalVisible, showModalVisible, hideModalVisible] =
+      useBoolean(false); //Khong can viet thanh ham nua
 
-  const history: RawHistory = useHistory(date);
+    const history: RawHistory = useHistory(date);
 
-  const color = useMemo(() => {
-    return isDayInMonth
-      ? isToday
-        ? Colors.azure
-        : Colors.oldSilver
-      : Colors.gray;
-  }, [isDayInMonth, isToday]);
+    const color = useMemo(() => {
+      return isDayInMonth
+        ? isToday
+          ? Colors.azure
+          : Colors.oldSilver
+        : Colors.gray;
+    }, [isDayInMonth, isToday]);
 
-  const onOpenModal = useCallback(() => {
-    if (history?.logs.length > 0) {
-      showModalVisible();
-    }
-  }, [history?.logs.length, showModalVisible]);
+    const onOpenModal = useCallback(() => {
+      if (history?.logs.length > 0) {
+        showModalVisible();
+      }
+    }, [history?.logs.length, showModalVisible]);
 
-  return (
-    <>
-      <Modal
-        style={styles.modal}
-        isVisible={modalVisible}
-        hasBackdrop={true}
-        statusBarTranslucent={true}
-        onBackdropPress={hideModalVisible}
-        onSwipeComplete={hideModalVisible}
-        swipeThreshold={20}
-        swipeDirection="down">
-        <CenteredView>
-          <ModalView>
-            <InputContactContainer>
-              <NoteSelectContainer>
-                <NoteText>
-                  {weekName} {today}
-                </NoteText>
-              </NoteSelectContainer>
-              <ScrollView>
-                {history?.logs.length > 0 &&
-                  history?.logs.map((log, index) => {
+    return (
+      <>
+        <Modal
+          style={styles.modal}
+          isVisible={modalVisible}
+          hasBackdrop={true}
+          statusBarTranslucent={true}
+          onBackdropPress={hideModalVisible}
+          onSwipeComplete={hideModalVisible}
+          swipeThreshold={20}
+          swipeDirection="down">
+          <CenteredView>
+            <ModalView>
+              <InputContactContainer>
+                <NoteSelectContainer>
+                  <NoteText>
+                    {weekName} {today}
+                  </NoteText>
+                </NoteSelectContainer>
+                <ScrollView>
+                  {history?.logs.length > 0 &&
+                    history?.logs.map((log, index) => {
+                      return (
+                        <LogTime key={index}>
+                          <TitleText key={index}>
+                            {moment.unix(log.time).format('DD/MM')}{' '}
+                            {moment.unix(log.time).format('HH:mm:ss')}
+                          </TitleText>
+                          <DeatailText>
+                            IP: {log.ip} - Văn phòng: True Platform HQ
+                          </DeatailText>
+                        </LogTime>
+                      );
+                    })}
+                </ScrollView>
+              </InputContactContainer>
+            </ModalView>
+          </CenteredView>
+        </Modal>
+
+        <DayContainer disabled={!isDayInMonth} onPress={onOpenModal}>
+          <Date color={color}>{dateTitle}</Date>
+          {isDayInMonth && history?.logs.length > 0 && (
+            <>
+              {history?.logs.length > 0 &&
+                history?.logs.map((log, index) => {
+                  if (index === 0 || index === history?.logs?.length - 1)
                     return (
-                      <LogTime>
-                        <TitleText key={index}>
-                          {moment.unix(log.time).format('DD/MM')}{' '}
-                          {moment.unix(log.time).format('HH:mm:ss')}
-                        </TitleText>
-                        <DeatailText>
-                          IP: {log.ip} - Văn phòng: True Platform HQ
-                        </DeatailText>
-                      </LogTime>
+                      <Time key={index}>
+                        {moment.unix(log.time).format('HH:mm')}
+                      </Time>
                     );
-                  })}
-              </ScrollView>
-            </InputContactContainer>
-          </ModalView>
-        </CenteredView>
-      </Modal>
-
-      <DayContainer disabled={!isDayInMonth} onPress={onOpenModal}>
-        <Date color={color}>{dateTitle}</Date>
-        {isDayInMonth && history?.logs.length > 0 && (
-          <>
-            {history?.logs.length > 0 &&
-              history?.logs.map((log, index) => {
-                if (index === 0 || index === history?.logs?.length - 1)
-                  return (
-                    <Time key={index}>
-                      {moment.unix(log.time).format('HH:mm')}
-                    </Time>
-                  );
-              })}
-          </>
-        )}
-      </DayContainer>
-    </>
-  );
-});
+                })}
+            </>
+          )}
+        </DayContainer>
+      </>
+    );
+  },
+);
 
 const NoteSelectContainer = styled.View`
   border-bottom-width: 0.5px;

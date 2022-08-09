@@ -7,6 +7,9 @@ import {Provider} from 'react-redux';
 import {persistor, store} from '@/store';
 import Routes from '@/Routes';
 import {PersistGate} from 'redux-persist/integration/react';
+import {LogBox} from 'react-native';
+LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
+LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 export default function App() {
   return (

@@ -21,4 +21,5 @@ export const Colors = {
   azure: '#007AFF',
   green1: '#27AE60',
   green2: '#34C759',
+  blues: '#0077cc',
 };

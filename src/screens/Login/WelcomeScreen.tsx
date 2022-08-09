@@ -1,10 +1,13 @@
-import React, {memo} from 'react';
+import React, {memo, useCallback} from 'react';
 import styled from 'styled-components/native';
 import {Colors} from '@/themes/Colors';
 import {IC_BASE_ME} from '@/assets';
 import {navigateToLoginScreen} from '@/utils/navigation';
 
 export const WelcomeScreen = memo(() => {
+  const onNavigation = useCallback(() => {
+    navigateToLoginScreen({});
+  }, []);
   return (
     <WelcomeScreenContainer>
       <HeaderContainer>
@@ -19,7 +22,7 @@ export const WelcomeScreen = memo(() => {
       <FooterContainer>
         <WarningText>Bạn chưa đăng nhập</WarningText>
         <WrapButton>
-          <BtnLogin onPress={navigateToLoginScreen}>
+          <BtnLogin onPress={onNavigation}>
             <BtnLoginText>ĐĂNG NHẬP THỦ CÔNG</BtnLoginText>
           </BtnLogin>
         </WrapButton>

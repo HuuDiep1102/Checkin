@@ -1,7 +1,6 @@
 module.exports = {
   presets: ['module:metro-react-native-babel-preset'],
   plugins: [
-    'react-native-reanimated/plugin',
     [
       require.resolve('babel-plugin-module-resolver'),
       {
@@ -16,10 +15,10 @@ module.exports = {
           '.jsx',
           '.js',
           '.json',
-          '.png'
+          '.png',
         ],
         alias: {
-          '@': './src'
+          '@': './src',
         },
       },
     ],
